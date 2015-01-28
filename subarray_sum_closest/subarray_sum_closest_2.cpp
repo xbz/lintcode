@@ -2,41 +2,32 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <climits>
 
 using namespace std;
 
 class Solution {
 public:
     vector<int> subarraySumClosest(vector<int> nums){
-        map<int, int> m;
         int cur_sum = 0;
-        vector<int> v;
-        vector<int> ret;
-        m[cur_sum] = -1;
+        vector<pair<int, int> > v;
+        v.push_back(make_pair(cur_sum, -1));
         for (size_t i=0; i<nums.size(); ++i) {
             cur_sum += nums[i];
-            if (cur_sum == 0) {
-                ret.push_back(0);
-                ret.push_back(i);
-                return ret;
-            }
-            m[cur_sum] = i;
-            v.push_back(cur_sum);
+            v.push_back(make_pair(cur_sum, i));
         }
 
         sort(v.begin(), v.end());
-        int min_diff = abs(v[0]);
-        int idx1 = m[v[0]];
-        int idx2 = m[v[0]];
+        long long min_diff = LONG_LONG_MAX;
+        vector<int> ret(2);
         for (size_t i=1; i<v.size(); ++i) {
-            if (abs(v[i]-v[i-1]) < min_diff) {
-                min_diff = abs(v[i]-v[i-1]);
-                idx1 = min(m[v[i]], m[v[i-1]]) + 1;
-                idx2 = max(m[v[i]], m[v[i-1]]);
+            long long diff = abs(v[i].first - v[i-1].first);
+            if (diff < min_diff) {
+                min_diff = diff;
+                ret[0] = min(v[i].second, v[i-1].second) + 1;
+                ret[1] = max(v[i].second, v[i-1].second);
             }
         }
-        ret.push_back(idx1);
-        ret.push_back(idx2);
         return ret;
     }
 };
@@ -44,7 +35,7 @@ public:
 int main(int argc, char *argv[])
 {
     Solution s;
-    int arr[] = { -20, 10, -30, 54, -18, 299, 11, -55, 99 };
+    int arr[] = { -2147483648 };
     int n = sizeof(arr) / sizeof(arr[0]);
     vector<int> v(arr, arr+n);
 
