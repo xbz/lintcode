@@ -16,6 +16,34 @@ void print(const vector<int>& v)
 
 class Solution {
 public:
+	// on lintcode, sometimes accept, sometimes TLE
+	int longestIncreasingSubsequence(vector<int> nums) {
+		if (nums.size() == 0)
+			return 0;
+
+		int ret = 1;
+		for (size_t i=0; i<nums.size(); ++i)
+			ret = max(ret, lis(nums, i));
+		return ret;
+	}
+
+
+private:
+	int lis(const vector<int>& v, size_t pos) {
+		if (pos == 0)
+			return 1;
+
+		int ret = 1;
+		for (size_t i=0; i<pos; ++i) {
+			if (v[i] <= v[pos])
+				ret = max(ret, lis(v, i)+1);
+		}
+		return ret;
+	}
+};
+
+class Solution_dfs {
+public:
 	int longestIncreasingSubsequence(vector<int> nums) {
 		if (nums.size() == 0)
 			return 0;
