@@ -3,6 +3,7 @@
 #include <climits>
 #include <algorithm>
 #include <unordered_set>
+#include <string.h>
 
 using namespace std;
 
@@ -15,6 +16,30 @@ void print(const vector<int>& v)
 }
 
 class Solution {
+public:
+	int longestIncreasingSubsequence(vector<int> nums) {
+		if (nums.size() == 0)
+			return 0;
+
+		size_t n = nums.size();
+		int f[n];
+		for (size_t i=0; i<n; ++i)
+			f[i] = 0;
+
+		int lis = 1;
+		for (size_t i=0; i<n; ++i) {
+			f[i] = 1;
+			for (size_t j=0; j<i; ++j) {
+				if (nums[j] <= nums[i])
+					f[i] = max(f[i], f[j]+1);
+			}
+			lis = max(lis, f[i]);
+		}
+		return lis;
+	}
+};
+
+class Solution_Slow {
 public:
 	// on lintcode, sometimes accept, sometimes TLE
 	int longestIncreasingSubsequence(vector<int> nums) {
