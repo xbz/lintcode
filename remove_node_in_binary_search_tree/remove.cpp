@@ -15,9 +15,9 @@ struct TreeNode {
 void print(const vector<int>& v)
 {
     vector<int>::size_type i;
-    for (i=0; i<v.size()-1; i++)
+    for (i=0; i<v.size(); i++)
         cout << v[i] << ' ';
-    cout << v[i] << endl;
+    cout << endl;
 }
 
 class Traversal {
@@ -43,6 +43,9 @@ public:
 
     vector<int> inorder(TreeNode *root) {
         vector<int> ret;
+		if (root == NULL)
+			return ret;
+
         stack<TreeNode *> s;
         TreeNode *cur = root;
         while (true) {
@@ -62,6 +65,140 @@ public:
 };
 
 class Solution {
+public:
+	TreeNode* removeNode(TreeNode* root, int value) {
+		if (root == NULL)
+			return root;
+
+		if (value < root->val) {
+			root->left = removeNode(root->left, value);
+		} else if (value > root->val) {
+			root->right = removeNode(root->right, value);
+		} else {
+			if (root->left == NULL)
+				return root->right;
+			else if (root->right == NULL)
+				return root->left;
+
+			TreeNode* p = minValNode(root->right);
+			root->val = p->val;
+			root->right = removeNode(root->right, p->val);
+		}
+		return root;
+	}
+
+private:
+	TreeNode* minValNode(TreeNode* root) {
+		if (root == NULL)
+			return root;
+
+		TreeNode* p = root;
+		while (p->left != NULL)
+			p = p->left;
+		return p;
+	}
+};
+
+class Solution_Recursive2 {
+public:
+	TreeNode* removeNode(TreeNode* root, int value) {
+		if (root == NULL)
+			return root;
+
+		TreeNode dummy(0);
+		dummy.left = root;
+		rm(root, &dummy.left, value);
+		return dummy.left;
+	}
+
+private:
+	void rm(TreeNode* root, TreeNode** parentlink, int value) {
+		if (root == NULL)
+			return;
+
+		if (value < root->val) {
+			rm(root->left, &root->left, value);
+		} else if (value > root->val) {
+			rm(root->right, &root->right, value);
+		} else {
+			if (root->left==NULL && root->right==NULL) {
+				*parentlink = NULL;
+			} else if (root->left == NULL) {
+				*parentlink = root->right;
+			} else if (root->right == NULL) {
+				*parentlink = root->left;
+			} else {
+				TreeNode* p = root->right;
+				TreeNode* pre = NULL;
+				while (p->left != NULL) {
+					pre = p;
+					p = p->left;
+				}
+				if (pre != NULL)
+					pre->left = p->right;
+				p->left = root->left;
+				p->right = root->right;
+				*parentlink = p;
+			}
+		}
+	}
+};
+
+class Solution_Recursive1 {
+public:
+    TreeNode* removeNode(TreeNode* root, int value) {
+		if (root == NULL)
+			return root;
+
+		rm(root, NULL, value);
+		return root;
+	}
+
+private:
+	void rm(TreeNode* root, TreeNode* parent, int value) {
+		if (root == NULL)
+			return;
+
+		if (value == root->val) {
+			if (root->left==NULL && root->right==NULL) {
+				if (parent->left == root)
+					parent->left = NULL;
+				else
+					parent->right = NULL;
+			} else if (root->left == NULL) {
+				if (parent->left == root)
+					parent->left = root->right;
+				else
+					parent->right = root->right;
+			} else if (root->right == NULL) {
+				if (parent->left == root)
+					parent->left = root->left;
+				else
+					parent->right = root->left;
+			} else {
+				TreeNode* p = root->right;
+				TreeNode* pre = NULL;
+				while (p->left != NULL) {
+					pre = p;
+					p = p->left;
+				}
+				if (pre != NULL)
+					pre->left = p->right;
+				p->left = root->left;
+				if (parent->left == root)
+					parent->left = p;
+				else
+					parent->right = p;
+			}
+		} else if (value < root->val) {
+			rm(root->left, root, value);
+		} else {
+			rm(root->right, root, value);
+		}
+	}
+};
+
+class Solution_Iter {
 public:
     TreeNode* removeNode(TreeNode* root, int value) {
 		if (root == NULL)
@@ -206,7 +343,7 @@ int main(int argc, char *argv[])
     // t1->right = t7;
 
 	Solution s;
-	TreeNode *root = s.removeNode(t5, 90);
+	TreeNode *root = s.removeNode(t5, 15);
 
 	Traversal tra;
     print(tra.preorder(root));
