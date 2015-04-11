@@ -64,6 +64,7 @@ public:
     }
 };
 
+// recursive3
 class Solution {
 public:
 	TreeNode* removeNode(TreeNode* root, int value) {
